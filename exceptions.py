@@ -1,14 +1,14 @@
-class TelegramDeliveryError(Exception):
+class SmallException(Exception):
     pass
 
 
-class NoHomeworkError(Exception):
+class NoHomeworkError(SmallException):
     pass
 
 
-class BadServerResponseError(Exception):
+class BadServerResponseError(SmallException):
     pass
 
 
-class ServerConnectionError(Exception):
+class ServerConnectionError(SmallException):
     pass
