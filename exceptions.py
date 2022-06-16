@@ -6,9 +6,12 @@ class NoHomeworkError(SmallException):
     pass
 
 
-class BadServerResponseError(SmallException):
+class BadServerResponseError(Exception):
     pass
 
 
-class ServerConnectionError(SmallException):
+class ServerConnectionError(Exception):
+    pass
+
+class TelegramDeliveryError(Exception):
     pass

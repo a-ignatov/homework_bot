@@ -33,8 +33,6 @@ def send_message(bot, message):
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logging.info('Успешно отправлено сообщение в чат')
     except telegram.error.TelegramError:
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID,
-                         text='Сообщение о статусе работы не отправлено')
         raise exceptions.TelegramDeliveryError()
 
 
@@ -48,11 +46,11 @@ def get_api_answer(current_timestamp):
         if response_status != 200:
             message = (f'{"Статус ответа API != 200"}: {ENDPOINT}')
             logging.error(message)
-            raise exceptions.SmallException.BadServerResponseError(message)
+            raise exceptions.BadServerResponseError(message)
         return response.json()
     except Exception:
         message = ('Ошибка в ответе API')
-        raise exceptions.SmallException.ServerConnectionError(message)
+        raise exceptions.ServerConnectionError(message)
 
 
 def check_response(response):
@@ -63,10 +61,9 @@ def check_response(response):
         raise TypeError(message, response)
     if 'homeworks' not in response or 'current_date' not in response:
         message = (f'{"Отсутствуют обязательные ключи"}')
-        raise exceptions.SmallException.NoHomeworkError(message, response)
+        raise exceptions.NoHomeworkError(message, response)
     if not isinstance(response['homeworks'], list):
         message = (f'{"API отдает не список"}')
-        logging.error(message)
         raise TypeError(message, response)
     return response['homeworks']
 
@@ -80,7 +77,7 @@ def parse_status(homework):
     verdict = HOMEWORK_VERDICTS.get(homework_status)
     if homework_status not in HOMEWORK_VERDICTS:
         message = (f'{"Недокументированный статус домашней работы"}')
-        raise exceptions.SmallException.BadServerResponseError(message)
+        raise ValueError(message)
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
@@ -116,7 +113,6 @@ def main():
             current_timestamp = int(time.time())
         except exceptions.SmallException:
             logging.error(exc_info=True)
-            continue
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             if message == prev_report:
